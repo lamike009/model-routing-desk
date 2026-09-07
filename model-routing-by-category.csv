@@ -2,11 +2,11 @@ category,rank,model,provider,quality_score,cost_in_per_mtok_usd,cost_out_per_mto
 creative_writing,1,Claude Fable 5.1,Anthropic,96,10.00,50.00,,,,yes,"Best long-form voice, novels, essays, narrative tone."
 creative_writing,2,Claude Fable 5,Anthropic,94,10.00,50.00,,,,,Near-identical prose to 5.1; use if 5.1 is unavailable.
 creative_writing,3,Claude Opus 5,Anthropic,93,5.00,25.00,,,,,Literary quality at half Fable token price.
-creative_writing,4,Muse Spark 1.2,Meta,92,1.25,4.25,,,,,Strong Arena writing; cheap creative drafts.
+creative_writing,4,Muse Spark 1.3,Meta,93,1.25,4.25,,,,,Replaces 1.2 (2 Sep). LiveBench 81.6; cheap Arena-class drafts.
 creative_writing,5,Claude Sonnet 5,Anthropic,88,2.00,10.00,,,,,Daily writing when Opus/Fable is overkill.
 creative_writing,6,Qwen3.8 Max,Alibaba,87,2.00,6.00,,,,,Expressive multilingual prose; good cheap Claude alternative.
 creative_writing,7,Gemini 3.8 Flash,Google,86,0.75,3.75,,,,,Fast drafts; lighter literary voice.
-creative_writing,8,GPT-6 Astra,OpenAI,85,10.00,50.00,,,,,Early frontier; unproven vs Claude on voice.
+creative_writing,8,GPT-6 Astra,OpenAI,85,10.00,50.00,,,,,Early frontier; unproven vs Claude on voice. Eval-only until proxy-checked.
 creative_writing,9,GPT-5.6 Sol,OpenAI,82,4.00,20.00,,,,,Competent but more 'assistant' than author.
 creative_writing,10,Grok 4.6,xAI,81,2.00,6.00,,,,,Punchy/personality-heavy; less sustained literary control.
 creative_writing,11,Kimi K3,Moonshot,80,3.00,15.00,,,,,Fine for drafts; not the voice pick.
@@ -14,10 +14,10 @@ creative_writing,12,GPT-5.6 Terra,OpenAI,79,2.00,12.00,,,,,Functional prose; pas
 
 copywriting,1,Claude Fable 5.1,Anthropic,94,10.00,50.00,,,,,Highest-end brand voice and long-form sales pages.
 copywriting,2,Claude Opus 5,Anthropic,93,5.00,25.00,,,,yes,Default for conversion copy that still reads human.
-copywriting,3,GPT-5.6 Sol,OpenAI,90,4.00,20.00,,,,,Ads
+copywriting,3,GPT-5.6 Sol,OpenAI,90,4.00,20.00,,,,,"Ads, hooks, CTA structure, landing-page formulas."
 copywriting,4,Claude Sonnet 5,Anthropic,89,2.00,10.00,,,,,Volume copy at Claude quality without Opus cost.
 copywriting,5,GPT-6 Astra,OpenAI,88,10.00,50.00,,,,,Strong structured marketing copy; evidence still early.
-copywriting,6,Muse Spark 1.2,Meta,87,1.25,4.25,,,,,Cheap on-brand drafts and social copy.
+copywriting,6,Muse Spark 1.3,Meta,88,1.25,4.25,,,,,Replaces 1.2. Cheap on-brand drafts and social copy.
 copywriting,7,Gemini 3.8 Flash,Google,86,0.75,3.75,,,,,Fast ad variants and headline volume.
 copywriting,8,Grok 4.6,xAI,84,2.00,6.00,,,,,Edgy/social copy; less 'agency polished'.
 copywriting,9,Qwen3.8 Max,Alibaba,83,2.00,6.00,,,,,Multilingual ads and product copy.
@@ -25,46 +25,46 @@ copywriting,10,GPT-5.6 Terra,OpenAI,82,2.00,12.00,,,,,Solid mid-tier conversion 
 copywriting,11,Kimi K3,Moonshot,80,3.00,15.00,,,,,Usable drafts; not the closer.
 copywriting,12,GLM-5.3,Z.ai,76,1.40,4.40,,,,,Cheap bulk variants; human-edit required.
 
-coding,1,Claude Opus 5,Anthropic,96,5.00,25.00,,,,yes,Hardest multi-file engineering; SWE-bench Verified 96%.
+coding,1,Claude Opus 5,Anthropic,96,5.00,25.00,,,,yes,Hardest multi-file engineering; SWE-bench Verified 96–97%.
 coding,2,Claude Fable 5.1,Anthropic,94,10.00,50.00,,,,,Highest ceiling; pay extra only when Opus is stuck.
 coding,3,Claude Fable 5,Anthropic,93,10.00,50.00,,,,,SWE-bench Pro leader among published scores (80.3%).
-coding,4,GPT-5.6 Sol,OpenAI,92,4.00,20.00,,,,,Repo agents
+coding,4,GPT-5.6 Sol,OpenAI,92,4.00,20.00,,,,,"Repo agents, tests, terminal-heavy implementation."
 coding,5,Grok 4.6,xAI,90,2.00,6.00,,,,,Best quality-per-dollar coding; Grok Build default.
 coding,6,GPT-5.6 Terra,OpenAI,88,2.00,12.00,,,,,Codex coding without Sol's max agent spend.
 coding,7,Claude Sonnet 5,Anthropic,86,2.00,10.00,,,,,Daily production coding; 80%+ of real tasks.
-coding,8,GPT-6 Astra,OpenAI,85,10.00,50.00,,,,,New coding-agent index 67; still provisional.
-coding,9,Kimi K3,Moonshot,84,3.00,15.00,,,,,Cheap capable coder for well-specified tasks.
-coding,10,GLM-5.3,Z.ai,82,1.40,4.40,,,,,Inexpensive implementation loops; weaker reviews.
-coding,11,Gemini 3.8 Flash,Google,81,0.75,3.75,,,,,Fast patches and boilerplate; not architecture.
-coding,12,Qwen3.8 Max,Alibaba,80,2.00,6.00,,,,,Strong open-adjacent coder; LiveCodeBench family strength.
+coding,8,Muse Spark 1.3,Meta,86,1.25,4.25,,,,,New 2 Sep agentic/coding tune; LiveBench 81.6. Cheap Claude-adjacent coder.
+coding,9,GPT-6 Astra,OpenAI,85,10.00,50.00,,,,,Coding-agent index 67; Terminal-Bench 4.0 57.9%. Still provisional / eval-only.
+coding,10,Kimi K3,Moonshot,84,3.00,15.00,,,,,Cheap capable coder for well-specified tasks.
+coding,11,GLM-5.3,Z.ai,82,1.40,4.40,,,,,Inexpensive implementation loops; SWE-V ~95.4%.
+coding,12,Gemini 3.8 Flash,Google,81,0.75,3.75,,,,,Fast patches and boilerplate; not architecture.
 
 design,1,GPT Image 2,OpenAI,95,n/a,n/a,,,,yes,Best prompt-accurate images; billed per image not tokens.
 design,2,Nano Banana Pro,Google,94,n/a,n/a,,,,,"Edits, layout, text-in-image; Gemini image credits not $/MTok."
-design,3,Midjourney V8,Midjourney,92,n/a,n/a,,,,,Art direction
+design,3,Midjourney V8,Midjourney,92,n/a,n/a,,,,,"Art direction, cinematic mood boards; subscription credits."
 design,4,FLUX.2 Max,Black Forest Labs,90,n/a,n/a,,,,,Photoreal product shots; per-image / self-host FLUX.2.
-design,5,Seedream 4.5,ByteDance,88,n/a,n/a,,,,,4K product/packaging; per-image.
-design,6,Recraft V4,Recraft,86,n/a,n/a,,,,,Brand systems
-design,7,Ideogram 4.0,Ideogram,85,n/a,n/a,,,,,Logos
-design,8,Grok Imagine,xAI,84,n/a,n/a,,,,,Fast concepts; SuperGrok image credits not $/MTok.
-design,9,FLUX.2 Pro,Black Forest Labs,83,n/a,n/a,,,,,Cheaper photoreal than Max; per-image.
-design,10,Imagen 4 / Gemini image,Google,82,n/a,n/a,,,,,Natural photos; Gemini-stack credits.
-design,11,Reve 2.1,Reve,81,n/a,n/a,,,,,High quality at much lower $/image than GPT Image 2.
-design,12,Nano Banana 2,Google,80,n/a,n/a,,,,,Free/cheap Gemini image path for drafts.
+design,5,Reve 2.1,Reve,88,n/a,n/a,,,,,AA T2I ~#3 (Elo ~1127). Native 4K / editable layouts. Jumped from #11.
+design,6,Seedream 4.5,ByteDance,87,n/a,n/a,,,,,4K product/packaging; per-image.
+design,7,Recraft V4,Recraft,86,n/a,n/a,,,,,"Brand systems, vectors/SVG; per-image."
+design,8,Nano Banana 2,Google,85,n/a,n/a,,,,,Now outscores Pro on blind-vote T2I; free/cheap Gemini drafts.
+design,9,Ideogram 4.0,Ideogram,84,n/a,n/a,,,,,"Logos, posters, typography-first; per-image."
+design,10,Grok Imagine,xAI,83,n/a,n/a,,,,,Fast concepts; SuperGrok image credits not $/MTok.
+design,11,FLUX.2 Pro,Black Forest Labs,82,n/a,n/a,,,,,Cheaper photoreal than Max; per-image.
+design,12,Imagen 4 / Gemini image,Google,80,n/a,n/a,,,,,Natural photos; Gemini-stack credits.
 
-video_creation,1,MiniMax H3 Max,MiniMax / fal,94,n/a,n/a,0.080,48.00,288.00,yes,Current I2V arena leader; billed per second not tokens.
-video_creation,2,Seedance 2.0 / 2.5,ByteDance,93,n/a,n/a,0.230,138.72,832.32,,"Image-to-video, long takes; per-second."
-video_creation,3,Gemini Omni Flash,Google,92,n/a,n/a,0.100,60.00,360.00,,Conversational video in Gemini; credit-based.
-video_creation,4,MiniMax H3,MiniMax,91,n/a,n/a,0.080,48.00,288.00,,Near-Max quality; cheaper MiniMax per-second path.
-video_creation,5,Veo 3.1,Google,90,n/a,n/a,0.400,240.00,1440.00,,"Cinematic, native audio, 4K; Gemini/Veo credits."
-video_creation,6,Wan 3.0,Alibaba,88,n/a,n/a,0.100,60.00,360.00,,Strong open-adjacent video; per-second / self-host.
-video_creation,7,Grok Imagine Video 1.5,xAI,85,n/a,n/a,0.140,84.00,504.00,,Fast short-form + native audio; SuperGrok video credits.
+video_creation,1,MiniMax H3 Max,MiniMax / fal,94,n/a,n/a,0.080,48.00,288.00,yes,I2V arena leader (Elo 1201); T2V #3. Billed per second not tokens.
+video_creation,2,Wan 3.0,Alibaba,93,n/a,n/a,0.100,60.00,360.00,,AA T2V leader (Elo 1239) and video-edit #1. Official 720p $0.10/s; 30s clips.
+video_creation,3,Gemini Omni Flash,Google,92,n/a,n/a,0.100,60.00,360.00,,T2V #2 (Elo 1238). Conversational Gemini video; credit-based.
+video_creation,4,Seedance 2.0 / 2.5,ByteDance,91,n/a,n/a,0.230,138.72,832.32,,I2V #2 (Elo 1192); long takes / multi-ref. Per-second.
+video_creation,5,MiniMax H3,MiniMax,90,n/a,n/a,0.080,48.00,288.00,,I2V #3 / T2V #4. Near-Max quality; 2K MiniMax path.
+video_creation,6,Veo 3.1,Google,89,n/a,n/a,0.400,240.00,1440.00,,"Cinematic, native audio, 4K; Gemini/Veo credits. Arena Elo trails the new top five."
+video_creation,7,Grok Imagine Video 1.5,xAI,85,n/a,n/a,0.140,84.00,504.00,,I2V #6 (Elo 1110). Fast short-form + native audio; official 720p $0.14/s.
 video_creation,8,Kling 3.0,Kuaishou,84,n/a,n/a,0.168,100.80,604.80,,"Action, realistic motion; cheap per-second clips."
 video_creation,9,Runway Gen-4.5,Runway,82,n/a,n/a,0.120,72.00,432.00,,Camera/motion control; Runway credits.
 video_creation,10,Kling 3.0 Turbo,Kuaishou,80,n/a,n/a,0.090,54.00,324.00,,Fast multi-shot social clips; per-second.
 video_creation,11,PixVerse V6,PixVerse,78,n/a,n/a,0.080,48.00,288.00,,Cheap testing and volume social video.
 video_creation,12,Wan 2.7,Alibaba,76,n/a,n/a,0.080,48.00,288.00,,Open/self-host fallback. Do not start new work on Sora (API ends 24 Sep 2026).
 
-browser_use,1,GPT-5.6 Sol,OpenAI,92,4.00,20.00,,,,,Hardest web tasks; BrowseComp 92.2. Default for tough browsing.
+browser_use,1,GPT-5.6 Sol,OpenAI,92,4.00,20.00,,,,,Hardest web tasks; BrowseComp 92.2. Escalate here when Kimi is stuck.
 browser_use,2,Kimi K3,Moonshot,91,3.00,15.00,,,,yes,"Pass here first for most browser jobs — 91.2 BrowseComp, cheaper than Sol."
 browser_use,3,Claude Opus 5,Anthropic,91,5.00,25.00,,,,,90.8 BrowseComp; use when judgment/reading quality matters more than cost.
 browser_use,4,GPT-5.6 Terra,OpenAI,88,2.00,12.00,,,,,87.5 BrowseComp; Sol-class browsing at a lower token price.
@@ -80,25 +80,25 @@ browser_use,12,GLM-5.3,Z.ai,76,1.40,4.40,,,,,Budget browser loops; verify extrac
 agent_development,1,GPT-5.6 Sol,OpenAI,92,4.00,20.00,,,,yes,"Build the agent here — Terminal-Bench 91.9, agentic score 92, Codex harness."
 agent_development,2,Claude Opus 5,Anthropic,91,5.00,25.00,,,,,Claude Code production agents; SWE + tool use.
 agent_development,3,Claude Fable 5.1,Anthropic,90,10.00,50.00,,,,,Hardest agent designs; ultracode / multi-agent scaffolding.
-agent_development,4,Grok 4.6,xAI,88,2.00,6.00,,,,,Grok Build agents; best cheap agent runtime to implement in.
-agent_development,5,Kimi K3,Moonshot,87,3.00,15.00,,,,,Cheap tool-calling agent cores; 88.3 Terminal-Bench.
-agent_development,6,GPT-5.6 Terra,OpenAI,86,2.00,12.00,,,,,Build lighter Codex agents when Sol is overkill.
-agent_development,7,Claude Fable 5,Anthropic,85,10.00,50.00,,,,,Known quantity if 5.1 is gated.
-agent_development,8,GLM-5.3,Z.ai,84,1.40,4.40,,,,,Inexpensive agent loops; good for internal tools.
-agent_development,9,GPT-6 Astra,OpenAI,83,10.00,50.00,,,,,New coding-agent index 67; try after Sol.
-agent_development,10,Claude Sonnet 5,Anthropic,82,2.00,10.00,,,,,Everyday Claude Code; not the architecture model.
-agent_development,11,Qwen3.8 Max,Alibaba,80,2.00,6.00,,,,,Open-adjacent agent stacks; computer-use agents.
-agent_development,12,Gemini 3.8 Flash,Google,76,0.75,3.75,,,,,Fast prototypes only; weaker long-horizon agents.
+agent_development,4,GPT-6 Astra,OpenAI,88,10.00,50.00,,,,,TB4 57.9% vs Sol 37.3% / Fable 5.1 55.8%. Eval-only until proxy verified; do not pass here yet.
+agent_development,5,Grok 4.6,xAI,87,2.00,6.00,,,,,Grok Build agents; best cheap agent runtime to implement in.
+agent_development,6,Muse Spark 1.3,Meta,86,1.25,4.25,,,,,2 Sep long-horizon agentic tune; AA Index 62 at max. Cheap tool-calling cores.
+agent_development,7,Kimi K3,Moonshot,85,3.00,15.00,,,,,Cheap tool-calling agent cores; 88.3 Terminal-Bench.
+agent_development,8,GPT-5.6 Terra,OpenAI,84,2.00,12.00,,,,,Build lighter Codex agents when Sol is overkill.
+agent_development,9,Claude Fable 5,Anthropic,83,10.00,50.00,,,,,Known quantity if 5.1 is gated.
+agent_development,10,GLM-5.3,Z.ai,82,1.40,4.40,,,,,Inexpensive agent loops; good for internal tools.
+agent_development,11,Claude Sonnet 5,Anthropic,81,2.00,10.00,,,,,Everyday Claude Code; not the architecture model.
+agent_development,12,Qwen3.8 Max,Alibaba,79,2.00,6.00,,,,,Open-adjacent agent stacks; computer-use agents.
 
-position_of_agents,1,Claude Fable 5.1,Anthropic,94,10.00,50.00,,,,yes,Orchestrator: plans
+position_of_agents,1,Claude Fable 5.1,Anthropic,94,10.00,50.00,,,,yes,"Orchestrator: plans, positions, and hands off specialist agents."
 position_of_agents,2,Claude Opus 5,Anthropic,92,5.00,25.00,,,,,Default dispatcher when Fable cost is not worth it.
 position_of_agents,3,Grok 4.6,xAI,90,2.00,6.00,,,,,Tied top AA Agentic Index (59); cheap multi-agent lead.
 position_of_agents,4,GPT-5.6 Sol,OpenAI,89,4.00,20.00,,,,,Positions tool/browser/coding workers; strong terminal orchestration.
-position_of_agents,5,Claude Fable 5,Anthropic,86,10.00,50.00,,,,,Fallback orchestrator in the Fable line.
-position_of_agents,6,GPT-5.6 Terra,OpenAI,84,2.00,12.00,,,,,Mid-weight dispatcher for Codex-style worker pools.
-position_of_agents,7,Kimi K3,Moonshot,82,3.00,15.00,,,,,Cheap coordinator for browse/tool workers.
-position_of_agents,8,GLM-5.3,Z.ai,81,1.40,4.40,,,,,Budget orchestrator for high-volume internal agents.
-position_of_agents,9,GPT-6 Astra,OpenAI,80,10.00,50.00,,,,,Unproven as a lead; do not make it the default router yet.
-position_of_agents,10,Claude Sonnet 5,Anthropic,78,2.00,10.00,,,,,Simple 2–3 agent routing only.
-position_of_agents,11,Qwen3.8 Max,Alibaba,76,2.00,6.00,,,,,Routes computer-use workers well; weaker cross-domain planning.
-position_of_agents,12,Gemini 3.8 Flash,Google,72,0.75,3.75,,,,,Too shallow for multi-agent positioning; use as a worker not a lead.
+position_of_agents,5,Muse Spark 1.3,Meta,86,1.25,4.25,,,,,New cheap coordinator (AA 62). Not the default orchestrator.
+position_of_agents,6,Claude Fable 5,Anthropic,85,10.00,50.00,,,,,Fallback orchestrator in the Fable line.
+position_of_agents,7,GPT-5.6 Terra,OpenAI,83,2.00,12.00,,,,,Mid-weight dispatcher for Codex-style worker pools.
+position_of_agents,8,Kimi K3,Moonshot,82,3.00,15.00,,,,,Cheap coordinator for browse/tool workers.
+position_of_agents,9,GLM-5.3,Z.ai,81,1.40,4.40,,,,,Budget orchestrator for high-volume internal agents.
+position_of_agents,10,GPT-6 Astra,OpenAI,80,10.00,50.00,,,,,Unproven as a lead; do not make it the default router yet.
+position_of_agents,11,Claude Sonnet 5,Anthropic,78,2.00,10.00,,,,,Simple 2–3 agent routing only.
+position_of_agents,12,Qwen3.8 Max,Alibaba,76,2.00,6.00,,,,,Routes computer-use workers well; weaker cross-domain planning.
