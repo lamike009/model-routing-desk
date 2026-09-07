@@ -1,16 +1,19 @@
 # Model routing desk
 
-Private GitLab project: [vocar-studios-group/agent-ops/model-routing-desk](https://gitlab.com/vocar-studios-group/agent-ops/model-routing-desk)
+This is the shareable routing table for “which model do I pass this task to?”
 
-This is the shareable routing table for “which model do I pass this task to?” It lives here, not in `library` (playbooks) or `live-work` (ops issues).
+| Copy | Where | Why |
+|---|---|---|
+| Private | [GitLab `agent-ops/model-routing-desk`](https://gitlab.com/vocar-studios-group/agent-ops/model-routing-desk) | Vocar ops source of record. Not in `library` (playbooks) or `live-work` (issues). |
+| Public | [github.com/lamike009/model-routing-desk](https://github.com/lamike009/model-routing-desk) | Public copy you can link. Same files. |
+
+After a push to GitLab `main`, GitLab Pages publishes the desk at the project’s **Deploy → Pages** URL (private; GitLab login required). Until Pages is up, open the HTML locally or use **Load CSV**.
 
 | File | Role |
 |---|---|
 | `model-routing-by-category.csv` | **Source of truth.** Edit this. |
 | `model-routing-dashboard.html` | Viewer. Reads the CSV. |
 | `generate_routing_dashboard.py` | Rebuilds a frozen HTML snapshot after CSV edits. |
-
-After a push to `main`, GitLab Pages publishes the desk at the project’s **Deploy → Pages** URL (private; GitLab login required). Until Pages is up, open the HTML locally or use **Load CSV**.
 
 ---
 
@@ -160,8 +163,11 @@ From this folder:
 python generate_routing_dashboard.py
 git add model-routing-by-category.csv model-routing-dashboard.html
 git commit -m "Update routing: <what changed>"
-git push
+git push origin main
+git push github main
 ```
+
+`origin` is GitLab. `github` is the public copy. Push both when you refresh the table.
 
 If Excel has the CSV open, save will fail (file locked). Close Excel, then run the generator.
 
