@@ -59,10 +59,10 @@ LABELS = {
     "copywriting": "Copywriting",
     "coding": "Coding",
     "design": "Design",
-    "video_creation": "Video creation",
-    "browser_use": "Browser use",
-    "agent_development": "Agent development",
-    "position_of_agents": "Position of agents",
+    "video_creation": "Video",
+    "browser_use": "Browser",
+    "agent_development": "Agent build",
+    "position_of_agents": "Orchestration",
 }
 
 
@@ -161,7 +161,7 @@ def snapshot(rows: list[dict]) -> dict:
             pass_map[item["category"]] = item["model"]
         items.append(item)
     labels = {cat: LABELS.get(cat, cat.replace("_", " ").title()) for cat in {r["category"] for r in rows}}
-    return {"rows": items, "labels": labels, "pass": pass_map, "as_of": "2026-09-04"}
+    return {"rows": items, "labels": labels, "pass": pass_map, "as_of": "2026-09-07"}
 
 
 HTML = r"""<!DOCTYPE html>
@@ -172,177 +172,143 @@ HTML = r"""<!DOCTYPE html>
 <title>Model routing desk</title>
 <style>
   :root {
-    --bg: #14110d;
-    --bg-2: #1c1812;
-    --ink: #f3eadc;
-    --muted: #b7aa96;
-    --line: #3a3228;
-    --accent: #d4a054;
-    --accent-2: #7ea37a;
-    --warn: #c45c3e;
-    --card: #211c16;
-    --chip: #2a241c;
+    --bg: #16090c;
+    --ink: #faf4f2;
+    --muted: #e0c9c6;
+    --line: #5a2430;
+    --accent: #9a1a2c;
+    --accent-hot: #c42338;
+    --card: #241016;
+    --chip: #2e141b;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; background: var(--bg); color: var(--ink);
-    font: 15px/1.45 "Segoe UI", "Iowan Old Style", Georgia, sans-serif; }
-  body.drop { outline: 3px dashed var(--accent); outline-offset: -8px; }
-  header {
-    padding: 28px 28px 12px;
-    border-bottom: 1px solid var(--line);
-    background: linear-gradient(180deg, #1a1611, var(--bg));
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.45 "Segoe UI", system-ui, sans-serif;
   }
-  h1 { font-size: 28px; font-weight: 650; letter-spacing: -0.03em; margin: 0 0 6px; }
-  .sub { color: var(--muted); font-size: 13px; }
-  .share-bar {
-    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
-    padding: 10px 28px 0;
+  body.drop { outline: 3px dashed var(--accent-hot); outline-offset: -8px; }
+  a { color: var(--ink); }
+  header { padding: 24px 20px 8px; max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.03em; margin: 0 0 6px; }
+  .sub { color: var(--muted); font-size: 0.95rem; max-width: 62ch; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px 48px; }
+  .cats {
+    display: flex; gap: 8px; overflow-x: auto; padding: 12px 0 4px;
+    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
   }
-  .share-bar button, .share-bar label.file-btn {
-    background: var(--chip); color: var(--ink); border: 1px solid var(--line);
-    border-radius: 999px; padding: 6px 12px; cursor: pointer; font-size: 13px;
+  .cats button {
+    flex: 0 0 auto; scroll-snap-align: start;
+    min-height: 44px; padding: 10px 16px;
+    background: var(--chip); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 999px;
+    font-size: 0.95rem; cursor: pointer;
   }
-  .share-bar button:hover, .share-bar label.file-btn:hover { border-color: var(--accent); }
-  .share-bar input[type="file"] { display: none; }
-  .source { color: var(--muted); font-size: 12px; margin-left: 4px; }
-  .source b { color: var(--accent); font-weight: 650; }
-  .err { color: var(--warn); font-size: 12px; }
-  .pass-strip {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 8px;
-    padding: 16px 28px 8px;
+  .cats button.active {
+    background: var(--accent); border-color: var(--accent-hot); color: #fff; font-weight: 700;
   }
-  .pass-card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 10px 12px;
-    cursor: pointer;
+  .blurb {
+    color: var(--muted); font-size: 0.95rem; margin: 10px 0 18px; max-width: 70ch;
   }
-  .pass-card:hover { border-color: var(--accent); }
-  .pass-card small { display: block; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
-  .pass-card b { color: var(--accent); font-size: 14px; }
-  .controls {
-    display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: end;
-    padding: 12px 28px 16px;
-    position: sticky; top: 0; z-index: 5;
-    background: color-mix(in srgb, var(--bg) 92%, black);
-    border-bottom: 1px solid var(--line);
-    backdrop-filter: blur(8px);
+  .estimator {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 16px 18px 14px; margin-bottom: 22px;
   }
-  .cats { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
-  .cats button, .presets button {
-    background: var(--chip); color: var(--ink); border: 1px solid var(--line);
-    border-radius: 999px; padding: 6px 12px; cursor: pointer; font-size: 13px;
+  .estimator h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--muted); margin: 0 0 8px; font-weight: 650; }
+  .scrub { display: grid; gap: 8px; }
+  .scrub-top { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+  .scrub-val { color: #fff; font-weight: 700; font-variant-numeric: tabular-nums; font-size: 1.15rem; }
+  input[type="range"] {
+    width: 100%; height: 32px; accent-color: var(--accent-hot); cursor: pointer;
   }
-  .cats button.active { background: var(--accent); color: #1a140c; border-color: var(--accent); font-weight: 650; }
-  .presets button { color: var(--muted); }
-  .presets button:hover { color: var(--ink); }
-  label { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
-  select, input[type="range"] { accent-color: var(--accent); }
-  select {
-    background: var(--card); color: var(--ink); border: 1px solid var(--line);
-    border-radius: 8px; padding: 7px 10px; min-width: 160px;
+  .assume { color: var(--muted); font-size: 0.85rem; margin: 4px 0 12px; }
+  .top5 { display: grid; gap: 8px; }
+  .est {
+    display: grid; grid-template-columns: minmax(0,1fr) auto;
+    gap: 4px 12px; align-items: center;
+    padding: 8px 4px; border-top: 1px solid var(--line);
   }
-  .slider-wrap { min-width: 180px; }
-  .slider-wrap output { color: var(--accent); font-variant-numeric: tabular-nums; }
-  .count { margin-left: auto; color: var(--muted); font-size: 13px; }
-  main { padding: 8px 28px 48px; }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; cursor: pointer; user-select: none; }
-  th:hover { color: var(--accent); }
-  tr.pass td { background: color-mix(in srgb, var(--accent-2) 12%, transparent); }
-  .model { font-weight: 650; }
-  .provider { color: var(--muted); font-size: 12px; }
-  .qbar { height: 6px; background: #342c22; border-radius: 99px; width: 88px; display: inline-block; vertical-align: middle; margin-right: 8px; }
-  .qbar > i { display: block; height: 100%; border-radius: 99px; background: var(--accent); }
-  .q { font-variant-numeric: tabular-nums; font-weight: 650; }
-  .cost { font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .note { color: var(--muted); font-size: 13px; max-width: 42ch; }
-  .badge { display: inline-block; font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
-    background: var(--accent-2); color: #10210f; border-radius: 999px; padding: 2px 7px; margin-left: 8px; font-weight: 700; }
-  .empty { padding: 48px 8px; color: var(--muted); }
-  footer { padding: 8px 28px 32px; color: var(--muted); font-size: 12px; max-width: 86ch; }
+  .est:first-child { border-top: 0; }
+  .est .name { font-weight: 650; }
+  .est .prov { color: var(--muted); font-size: 0.8rem; }
+  .est .dollars { font-variant-numeric: tabular-nums; font-weight: 750; font-size: 1.1rem; text-align: right; }
+  .bar { grid-column: 1 / -1; height: 6px; background: #3a1820; border-radius: 99px; }
+  .bar > i { display: block; height: 100%; border-radius: 99px; background: var(--accent-hot); }
+  .pick { display: inline-block; margin-left: 6px; font-size: 0.7rem; letter-spacing: .06em;
+    text-transform: uppercase; background: var(--accent); color: #fff;
+    border-radius: 999px; padding: 2px 7px; font-weight: 700; vertical-align: 1px; }
+  h3 { font-size: 1.05rem; margin: 8px 0 10px; }
+  .list { display: grid; gap: 8px; }
+  .row {
+    display: grid; grid-template-columns: 2.2rem 1fr auto;
+    gap: 8px 12px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 12px 14px; align-items: start;
+  }
+  .row.pass { border-color: var(--accent-hot); }
+  .rank { color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 2px; }
+  .model { font-weight: 700; }
+  .prov { color: var(--muted); font-size: 0.85rem; }
+  .q { font-variant-numeric: tabular-nums; font-weight: 700; text-align: right; white-space: nowrap; }
+  .price { color: var(--muted); font-size: 0.85rem; text-align: right; font-variant-numeric: tabular-nums; }
+  .note { grid-column: 2 / -1; color: var(--muted); font-size: 0.92rem; }
+  .share { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 0; }
+  .share button, .share label.file-btn {
+    min-height: 44px; padding: 8px 14px; background: var(--chip); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 999px; cursor: pointer; font-size: 0.9rem;
+  }
+  .share input[type="file"] { display: none; }
+  .source { color: var(--muted); font-size: 0.85rem; }
+  .err { color: #ffb4b0; font-size: 0.85rem; }
+  footer { color: var(--muted); font-size: 0.85rem; margin-top: 28px; max-width: 72ch; }
   footer code { color: var(--ink); }
-  .is-off { display: none !important; }
-  @media (max-width: 800px) {
-    .note { display: none; }
-    header, .controls, main, footer, .pass-strip, .share-bar { padding-left: 14px; padding-right: 14px; }
-    .pass-strip { display: flex; overflow-x: auto; gap: 8px; }
-    .pass-card { min-width: 168px; flex: 0 0 auto; }
+  @media (min-width: 800px) {
+    .top5 { grid-template-columns: 1fr; }
+    .row { grid-template-columns: 2.2rem 1.4fr 0.7fr 2fr; }
+    .note { grid-column: auto; }
+    .q, .price { text-align: left; }
   }
 </style>
 </head>
 <body>
 <header>
   <h1>Model routing desk</h1>
-  <div class="sub">Pass the task to the right model. Sort quality · filter cost. CSV is the live table.</div>
+  <p class="sub">Twelve models per job. Scrub how much work you have; the top five show an estimated bill.</p>
 </header>
-<div class="share-bar">
-  <label class="file-btn">Load CSV
-    <input id="csvFile" type="file" accept=".csv,text/csv" />
-  </label>
-  <button type="button" id="saveCsv">Download CSV</button>
-  <button type="button" id="saveHtml">Download HTML snapshot</button>
-  <span class="source" id="source"></span>
-  <span class="err" id="err"></span>
-</div>
-<section class="pass-strip" id="passStrip"></section>
-<div class="controls">
-  <div class="cats" id="cats"></div>
-  <label>Sort
-    <select id="sort">
-      <option value="quality-desc">Quality high → low</option>
-      <option value="quality-asc">Quality low → high</option>
-      <option value="costin-asc">Cost in cheap → dear</option>
-      <option value="costout-asc">Cost out cheap → dear</option>
-      <option value="blended-asc">Blended 3:1 cheap → dear</option>
-      <option value="video10-asc">Video 10 min cheap → dear</option>
-      <option value="videohr-asc">Video 1 hour cheap → dear</option>
-      <option value="rank-asc">Table rank</option>
-    </select>
-  </label>
-  <label class="slider-wrap">Min quality <output id="qOut">70</output>
-    <input id="minQ" type="range" min="70" max="100" value="70" />
-  </label>
-  <label class="slider-wrap" id="inWrap">Max $ / 1M in <output id="inOut">any</output>
-    <input id="maxIn" type="range" min="0" max="10" step="0.25" value="10" />
-  </label>
-  <label class="slider-wrap" id="outWrap">Max $ / 1M out <output id="outOut">any</output>
-    <input id="maxOut" type="range" min="0" max="50" step="0.25" value="50" />
-  </label>
-  <label class="slider-wrap is-off" id="vidWrap">Max $ / 10 min video <output id="vidOut">any</output>
-    <input id="maxVid" type="range" min="40" max="240" step="4" value="240" />
-  </label>
-  <div class="presets">
-    <button type="button" data-preset="reset">Reset</button>
-    <button type="button" data-preset="cheap">Under $3 in</button>
-    <button type="button" data-preset="mid">Under $5 in / $15 out</button>
-    <button type="button" data-preset="quality">Quality 90+</button>
+<div class="wrap">
+  <nav class="cats" id="cats" aria-label="Use cases"></nav>
+  <p class="blurb" id="blurb"></p>
+
+  <section class="estimator" aria-labelledby="estTitle">
+    <h2 id="estTitle">Workload</h2>
+    <div class="scrub">
+      <div class="scrub-top">
+        <label for="work" id="workLabel">How much</label>
+        <div class="scrub-val" id="workOut"></div>
+      </div>
+      <input id="work" type="range" />
+    </div>
+    <p class="assume" id="assume"></p>
+    <div class="top5" id="top5"></div>
+  </section>
+
+  <h3 id="listTitle">The twelve</h3>
+  <div class="list" id="list"></div>
+
+  <div class="share">
+    <label class="file-btn">Load CSV<input id="csvFile" type="file" accept=".csv,text/csv" /></label>
+    <button type="button" id="saveCsv">Download CSV</button>
+    <button type="button" id="saveHtml">Download HTML</button>
+    <span class="source" id="source"></span>
+    <span class="err" id="err"></span>
   </div>
-  <div class="count" id="count"></div>
+  <footer>
+    Estimates use list prices and the assumptions under the slider — not a quote.
+    Written jobs count 3 revisions per piece. Token prices are USD per 1 million tokens.
+    Video is USD per output-second. Design is billed per image, so the slider counts units, not dollars.
+  </footer>
 </div>
-<main>
-  <table>
-    <thead>
-      <tr>
-        <th data-sort="rank-asc">#</th>
-        <th data-sort="quality-desc">Model</th>
-        <th data-sort="quality-desc">Quality</th>
-        <th id="costHead">Cost</th>
-        <th>When to pass</th>
-      </tr>
-    </thead>
-    <tbody id="tbody"></tbody>
-  </table>
-  <div class="empty" id="empty" hidden>Nothing matches these cost/quality filters. Loosen a slider or hit Reset.</div>
-</main>
-<footer>
-  Token prices are USD per 1 million tokens. Video dollars assume stitched output-seconds (clips are 5–30s). Design tools bill per image, so token filters hide them.<br />
-  To update: edit <code>model-routing-by-category.csv</code> (mark the first-pick with <code>pass=yes</code>). Drop the file here, or keep HTML + CSV in the same folder and serve them over http so the page reloads the CSV automatically. Download HTML snapshot to email a frozen copy that still opens without a server.
-</footer>
 <script type="application/json" id="snapshot">__SNAPSHOT__</script>
 <script>
 const DEFAULT_LABELS = {
@@ -350,38 +316,113 @@ const DEFAULT_LABELS = {
   copywriting: "Copywriting",
   coding: "Coding",
   design: "Design",
-  video_creation: "Video creation",
-  browser_use: "Browser use",
-  agent_development: "Agent development",
-  position_of_agents: "Position of agents",
+  video_creation: "Video",
+  browser_use: "Browser",
+  agent_development: "Agent build",
+  position_of_agents: "Orchestration",
+};
+const BLURB = {
+  creative_writing: "Long-form voice: essays, chapters, narrative. First pick is usually the most literary model, not the cheapest.",
+  copywriting: "Ads, landing pages, CTAs. Conversion copy that still reads human.",
+  coding: "Repos, patches, tests. Workload is lines of code in play — about a page is ~100 lines.",
+  design: "Still images and layouts. These tools bill per image, not tokens.",
+  video_creation: "Generated clips. Cost is stitched output-seconds (clips are short; an hour is many clips).",
+  browser_use: "Live web tasks. Minutes of the agent actually browsing and extracting.",
+  agent_development: "Building the agent itself — harness, tools, evals. Count discrete build tasks.",
+  position_of_agents: "Orchestration: the lead that plans and hands work to specialist agents. Not the workers. Count dispatch jobs.",
+};
+const WORK = {
+  creative_writing: {
+    label: "Blogs",
+    min: 5, max: 50, step: 5, value: 5,
+    assume: "Each blog is 3 generation runs (draft + 2 revisions). One run ≈ 4,000 input + 2,500 output tokens (~1,800 words out).",
+    tokens: (n) => ({ inn: n * 3 * 4000, out: n * 3 * 2500, runs: n * 3 }),
+    format: (n) => n + " blogs",
+    extra: (n) => n + " × 3 revisions = " + (n * 3) + " runs",
+  },
+  copywriting: {
+    label: "Pieces",
+    min: 5, max: 50, step: 5, value: 5,
+    assume: "Each piece is 3 generation runs (draft + 2 revisions). One run ≈ 3,500 input + 1,800 output tokens.",
+    tokens: (n) => ({ inn: n * 3 * 3500, out: n * 3 * 1800, runs: n * 3 }),
+    format: (n) => n + " pieces",
+    extra: (n) => n + " × 3 revisions = " + (n * 3) + " runs",
+  },
+  coding: {
+    label: "Lines of code",
+    min: 5000, max: 50000, step: 5000, value: 10000,
+    assume: "About 16 tokens/line to read, 4 tokens/line written back (a quarter of the file changes). Here 10 pages means 10,000 lines.",
+    tokens: (n) => ({ inn: n * 16, out: n * 4, runs: 1 }),
+    format: (n) => n.toLocaleString() + " lines",
+    extra: (n) => "≈ " + Math.round(n / 1000) + " pages",
+  },
+  design: {
+    label: "Design units",
+    min: 5, max: 50, step: 5, value: 5,
+    kind: "design",
+    assume: "One unit is one image or layout pass. These models are not token-billed, so the top five show quality, not a dollar estimate.",
+    format: (n) => n + " units",
+    extra: () => "per-image billing",
+  },
+  video_creation: {
+    label: "Minutes of video",
+    min: 1, max: 60, step: 1, value: 10,
+    kind: "video",
+    assume: "Minutes of finished output, billed per second. A 10-minute ask is 600 seconds of generation (usually many short clips).",
+    format: (n) => n + " min",
+    extra: (n) => (n * 60) + " seconds of output",
+  },
+  browser_use: {
+    label: "Minutes of browsing",
+    min: 5, max: 120, step: 5, value: 15,
+    assume: "Each minute of agent browsing ≈ 10,000 input + 2,500 output tokens (page text, tools, notes).",
+    tokens: (n) => ({ inn: n * 10000, out: n * 2500, runs: n }),
+    format: (n) => n + " min",
+    extra: () => "live web loop",
+  },
+  agent_development: {
+    label: "Build tasks",
+    min: 1, max: 20, step: 1, value: 5,
+    assume: "One task is a build session: spec, implementation, tests. ≈ 40,000 input + 16,000 output tokens.",
+    tokens: (n) => ({ inn: n * 40000, out: n * 16000, runs: n }),
+    format: (n) => n + " tasks",
+    extra: () => "build sessions",
+  },
+  position_of_agents: {
+    label: "Dispatch jobs",
+    min: 1, max: 25, step: 1, value: 5,
+    assume: "One job is a plan + handoff to workers. ≈ 8,000 input + 3,000 output tokens. This is the conductor, not the specialists.",
+    tokens: (n) => ({ inn: n * 8000, out: n * 3000, runs: n }),
+    format: (n) => n + " jobs",
+    extra: () => "orchestration",
+  },
 };
 const CSV_FIELDS = [
   "category","rank","model","provider","quality_score",
   "cost_in_per_mtok_usd","cost_out_per_mtok_usd",
   "usd_per_sec","cost_10min_usd","cost_1hr_usd","pass","pass_to_when"
 ];
+const CAT_ORDER = [
+  "creative_writing","copywriting","coding","design",
+  "video_creation","browser_use","agent_development","position_of_agents"
+];
 
 const $ = (id) => document.getElementById(id);
 const baked = JSON.parse($("snapshot").textContent);
 let DATA = { rows: [], labels: {}, pass: {} };
-let category = "browser_use";
-let sliderCap = { in: 10, out: 50, vid: 240 };
+let category = "creative_writing";
+const workVal = {};
 
 function parseCsv(text) {
   const rows = [];
   let i = 0, field = "", row = [], inQuotes = false;
   const pushField = () => { row.push(field); field = ""; };
-  const pushRow = () => {
-    if (row.some((c) => c.trim() !== "")) rows.push(row);
-    row = [];
-  };
+  const pushRow = () => { if (row.some((c) => c.trim() !== "")) rows.push(row); row = []; };
   while (i < text.length) {
     const c = text[i];
     if (inQuotes) {
-      if (c === '"') {
-        if (text[i + 1] === '"') { field += '"'; i++; }
-        else inQuotes = false;
-      } else field += c;
+      if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else inQuotes = false; }
+      else field += c;
     } else if (c === '"') inQuotes = true;
     else if (c === ",") pushField();
     else if (c === "\n") { pushField(); pushRow(); }
@@ -397,22 +438,16 @@ function parseCsv(text) {
     return obj;
   });
 }
-
 function num(v) {
   const s = String(v ?? "").trim();
   if (!s || s.toLowerCase() === "n/a") return null;
   const n = Number(s);
   return Number.isFinite(n) ? n : null;
 }
-
-function yes(v) {
-  return /^(1|y|yes|true|pass)$/i.test(String(v ?? "").trim());
-}
-
+function yes(v) { return /^(1|y|yes|true|pass)$/i.test(String(v ?? "").trim()); }
 function labelFor(cat) {
   return DEFAULT_LABELS[cat] || cat.replace(/_/g, " ").replace(/\b\w/g, (m) => m.toUpperCase());
 }
-
 function dataFromRows(rawRows, fallbackPass) {
   const rows = [];
   const pass = {};
@@ -423,9 +458,7 @@ function dataFromRows(rawRows, fallbackPass) {
     const model = (r.model || "").trim();
     const usd = num(r.usd_per_sec);
     const item = {
-      category: cat,
-      rank: parseInt(r.rank, 10) || 0,
-      model,
+      category: cat, rank: parseInt(r.rank, 10) || 0, model,
       provider: (r.provider || "").trim(),
       quality: parseInt(r.quality_score, 10) || 0,
       cost_in: num(r.cost_in_per_mtok_usd),
@@ -458,31 +491,20 @@ function dataFromRows(rawRows, fallbackPass) {
   });
   return { rows, labels, pass };
 }
-
 function csvEscape(v) {
   const s = v == null ? "" : String(v);
   return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
-
-function moneyCell(n, places) {
-  return n == null ? "" : Number(n).toFixed(places);
-}
-
-function tokenCell(n) {
-  return n == null ? "n/a" : Number(n).toFixed(2);
-}
-
+function moneyCell(n, places) { return n == null ? "" : Number(n).toFixed(places); }
+function tokenCell(n) { return n == null ? "n/a" : Number(n).toFixed(2); }
 function toCsv(data) {
   const lines = [CSV_FIELDS.join(",")];
-  const cats = Object.keys(data.labels);
+  const cats = CAT_ORDER.filter((c) => data.labels[c]).concat(Object.keys(data.labels).filter((c) => !CAT_ORDER.includes(c)));
   cats.forEach((cat, i) => {
     if (i) lines.push("");
     data.rows.filter((r) => r.category === cat).sort((a, b) => a.rank - b.rank).forEach((r) => {
       const rec = {
-        category: r.category,
-        rank: r.rank,
-        model: r.model,
-        provider: r.provider,
+        category: r.category, rank: r.rank, model: r.model, provider: r.provider,
         quality_score: r.quality,
         cost_in_per_mtok_usd: tokenCell(r.cost_in),
         cost_out_per_mtok_usd: tokenCell(r.cost_out),
@@ -497,7 +519,6 @@ function toCsv(data) {
   });
   return lines.join("\n") + "\n";
 }
-
 function download(filename, text, type) {
   const blob = new Blob([text], { type });
   const a = document.createElement("a");
@@ -506,114 +527,107 @@ function download(filename, text, type) {
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
-
-function money(n, d=2) {
+function money(n) {
   if (n == null || Number.isNaN(n)) return "n/a";
-  return "$" + n.toFixed(d);
+  if (n < 0.01) return "$" + n.toFixed(4);
+  if (n < 1) return "$" + n.toFixed(3);
+  if (n < 100) return "$" + n.toFixed(2);
+  return "$" + n.toFixed(0);
 }
-
-function blended(r) {
-  if (r.cost_in == null || r.cost_out == null) return Infinity;
-  return r.cost_in * 0.75 + r.cost_out * 0.25;
+function ktok(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
+  if (n >= 1000) return Math.round(n / 1000) + "k";
+  return String(n);
 }
-
-function setSource(label) {
-  $("source").innerHTML = "Showing <b>" + label + "</b>";
-  $("err").textContent = "";
+function catsOf() {
+  const have = Object.keys(DATA.labels);
+  return CAT_ORDER.filter((c) => have.includes(c)).concat(have.filter((c) => !CAT_ORDER.includes(c)));
+}
+function workFor() {
+  const spec = WORK[category] || WORK.creative_writing;
+  const n = workVal[category] ?? spec.value;
+  return { spec, n };
+}
+function estimate(row, spec, n) {
+  if (spec.kind === "video") {
+    if (row.usd_per_sec == null) return null;
+    return n * 60 * row.usd_per_sec;
+  }
+  if (spec.kind === "design") return null;
+  const t = spec.tokens(n);
+  if (row.cost_in == null || row.cost_out == null) return null;
+  return (t.inn / 1e6) * row.cost_in + (t.out / 1e6) * row.cost_out;
+}
+function listPrice(r) {
+  if (r.usd_per_sec != null) return money(r.usd_per_sec) + "/s";
+  if (r.cost_in == null) return "per image";
+  return money(r.cost_in) + " in · " + money(r.cost_out) + " out";
 }
 
 function applyData(data, sourceLabel) {
   DATA = data;
-  const cats = Object.keys(DATA.labels);
-  if (!cats.includes(category)) category = cats.includes("browser_use") ? "browser_use" : cats[0];
-  const qualities = DATA.rows.map((r) => r.quality);
-  const ins = DATA.rows.map((r) => r.cost_in).filter((n) => n != null);
-  const outs = DATA.rows.map((r) => r.cost_out).filter((n) => n != null);
-  const vids = DATA.rows.map((r) => r.cost_10min).filter((n) => n != null);
-  $("minQ").min = Math.min(70, ...qualities, 0);
-  $("minQ").max = Math.max(100, ...qualities);
-  sliderCap.in = Math.max(10, Math.ceil(Math.max(0, ...ins)));
-  sliderCap.out = Math.max(50, Math.ceil(Math.max(0, ...outs)));
-  sliderCap.vid = Math.max(240, Math.ceil(Math.max(0, ...vids)));
-  $("maxIn").max = sliderCap.in;
-  $("maxOut").max = sliderCap.out;
-  $("maxVid").max = sliderCap.vid;
-  if (+$("maxIn").value > sliderCap.in) $("maxIn").value = sliderCap.in;
-  if (+$("maxOut").value > sliderCap.out) $("maxOut").value = sliderCap.out;
-  if (+$("maxVid").value > sliderCap.vid) $("maxVid").value = sliderCap.vid;
-
+  const cats = catsOf();
+  if (!cats.includes(category)) category = cats[0];
   $("cats").innerHTML = cats.map((c) =>
-    `<button type="button" data-cat="${c}">${DATA.labels[c]}</button>`
+    `<button type="button" data-cat="${c}" aria-pressed="false">${DATA.labels[c]}</button>`
   ).join("");
-  $("passStrip").innerHTML = cats.map((c) =>
-    `<div class="pass-card" data-cat="${c}"><small>${DATA.labels[c]}</small><b>${DATA.pass[c] || "—"}</b></div>`
-  ).join("");
-  setSource(sourceLabel);
+  $("source").textContent = sourceLabel;
+  $("err").textContent = "";
   render();
 }
 
 function render() {
-  const minQ = +$("minQ").value;
-  const maxIn = +$("maxIn").value;
-  const maxOut = +$("maxOut").value;
-  const maxVid = +$("maxVid").value;
-  const sort = $("sort").value;
-  const isVideo = category === "video_creation";
-  const isDesign = category === "design";
-  const inAny = maxIn >= sliderCap.in;
-  const outAny = maxOut >= sliderCap.out;
-  const vidAny = maxVid >= sliderCap.vid;
+  const cats = catsOf();
+  document.querySelectorAll(".cats button").forEach((b) => {
+    const on = b.dataset.cat === category;
+    b.classList.toggle("active", on);
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+  });
+  $("blurb").textContent = BLURB[category] || "";
+  $("listTitle").textContent = "The twelve — " + (DATA.labels[category] || category);
 
-  $("qOut").textContent = minQ;
-  $("inOut").textContent = inAny ? "any" : money(maxIn);
-  $("outOut").textContent = outAny ? "any" : money(maxOut);
-  $("vidOut").textContent = vidAny ? "any" : money(maxVid, 0);
-  $("vidWrap").classList.toggle("is-off", !isVideo);
-  $("inWrap").classList.toggle("is-off", isVideo || isDesign);
-  $("outWrap").classList.toggle("is-off", isVideo || isDesign);
-  $("costHead").textContent = isVideo ? "10 min / 1 hour" : isDesign ? "Billing" : "$ / 1M in · out";
-
-  document.querySelectorAll(".cats button").forEach((b) => b.classList.toggle("active", b.dataset.cat === category));
-
-  const total = DATA.rows.filter((r) => r.category === category).length;
-  let list = DATA.rows.filter((r) => r.category === category && r.quality >= minQ);
-  if (isVideo) {
-    list = list.filter((r) => r.cost_10min == null || vidAny || r.cost_10min <= maxVid);
-  } else if (!isDesign) {
-    list = list.filter((r) => {
-      if (r.cost_in == null) return inAny && outAny;
-      return (inAny || r.cost_in <= maxIn) && (outAny || r.cost_out <= maxOut);
-    });
+  const spec = WORK[category] || WORK.creative_writing;
+  const slider = $("work");
+  if (workVal[category] == null) workVal[category] = spec.value;
+  slider.min = spec.min; slider.max = spec.max; slider.step = spec.step;
+  slider.value = workVal[category];
+  slider.setAttribute("aria-valuemin", spec.min);
+  slider.setAttribute("aria-valuemax", spec.max);
+  slider.setAttribute("aria-valuenow", workVal[category]);
+  $("workLabel").textContent = spec.label;
+  const n = +slider.value;
+  workVal[category] = n;
+  $("workOut").textContent = spec.format(n) + (spec.extra ? " · " + spec.extra(n) : "");
+  $("assume").textContent = spec.assume;
+  if (spec.tokens) {
+    const t = spec.tokens(n);
+    $("assume").textContent += " This scrub ≈ " + ktok(t.inn) + " input / " + ktok(t.out) + " output tokens.";
   }
 
-  const key = {
-    "quality-desc": (a,b) => b.quality - a.quality || a.rank - b.rank,
-    "quality-asc": (a,b) => a.quality - b.quality,
-    "costin-asc": (a,b) => (a.cost_in ?? 999) - (b.cost_in ?? 999),
-    "costout-asc": (a,b) => (a.cost_out ?? 999) - (b.cost_out ?? 999),
-    "blended-asc": (a,b) => blended(a) - blended(b),
-    "video10-asc": (a,b) => (a.cost_10min ?? 9999) - (b.cost_10min ?? 9999),
-    "videohr-asc": (a,b) => (a.cost_1hr ?? 9999) - (b.cost_1hr ?? 9999),
-    "rank-asc": (a,b) => a.rank - b.rank,
-  }[sort];
-  list.sort(key);
-
-  $("count").textContent = list.length + " of " + total + " in " + (DATA.labels[category] || category);
-  $("empty").hidden = list.length > 0;
-  $("tbody").innerHTML = list.map((r) => {
-    const qpct = Math.round((r.quality / 100) * 100);
-    let cost = "";
-    if (isVideo) cost = `<div class="cost">${money(r.cost_10min, 0)} / ${money(r.cost_1hr, 0)}</div><div class="provider">${money(r.usd_per_sec, 3)}/s</div>`;
-    else if (isDesign) cost = `<div class="cost">per image</div>`;
-    else cost = `<div class="cost">${money(r.cost_in)} in</div><div class="provider">${money(r.cost_out)} out</div>`;
-    return `<tr class="${r.pass ? "pass" : ""}">
-      <td>${r.rank}</td>
-      <td><div class="model">${r.model}${r.pass ? '<span class="badge">Pass here</span>' : ""}</div><div class="provider">${r.provider}</div></td>
-      <td><span class="qbar"><i style="width:${qpct}%"></i></span><span class="q">${r.quality}</span></td>
-      <td>${cost}</td>
-      <td class="note">${r.note}</td>
-    </tr>`;
+  const ranked = DATA.rows.filter((r) => r.category === category).sort((a, b) => a.rank - b.rank);
+  const top = ranked.slice(0, 5);
+  const costs = top.map((r) => estimate(r, spec, n));
+  const finite = costs.filter((c) => c != null && c > 0);
+  const maxC = finite.length ? Math.max(...finite) : 1;
+  $("top5").innerHTML = top.map((r, i) => {
+    const c = costs[i];
+    const pct = c == null || maxC <= 0 ? 0 : Math.round((c / maxC) * 100);
+    const dollars = spec.kind === "design" ? "per image" : money(c);
+    return `<div class="est">
+      <div><div class="name">${r.model}${r.pass ? '<span class="pick">First pick</span>' : ""}</div>
+      <div class="prov">${r.provider} · quality ${r.quality}</div></div>
+      <div class="dollars">${dollars}</div>
+      <div class="bar" aria-hidden="true"><i style="width:${pct}%"></i></div>
+    </div>`;
   }).join("");
+
+  $("list").innerHTML = ranked.map((r) => `<article class="row${r.pass ? " pass" : ""}">
+    <div class="rank">${r.rank}</div>
+    <div><div class="model">${r.model}${r.pass ? '<span class="pick">First pick</span>' : ""}</div>
+      <div class="prov">${r.provider}</div></div>
+    <div><div class="q">${r.quality}</div><div class="price">${listPrice(r)}</div></div>
+    <div class="note">${r.note}</div>
+  </article>`).join("");
 }
 
 function loadCsvText(text, label) {
@@ -628,32 +642,10 @@ $("cats").addEventListener("click", (e) => {
   category = b.dataset.cat;
   render();
 });
-$("passStrip").addEventListener("click", (e) => {
-  const card = e.target.closest(".pass-card");
-  if (!card) return;
-  category = card.dataset.cat;
+$("work").addEventListener("input", () => {
+  workVal[category] = +$("work").value;
   render();
 });
-["sort","minQ","maxIn","maxOut","maxVid"].forEach((id) => $(id).addEventListener("input", render));
-document.querySelectorAll("[data-preset]").forEach((b) => b.addEventListener("click", () => {
-  const p = b.dataset.preset;
-  if (p === "reset") {
-    $("minQ").value = 70;
-    $("maxIn").value = sliderCap.in;
-    $("maxOut").value = sliderCap.out;
-    $("maxVid").value = sliderCap.vid;
-    $("sort").value = "quality-desc";
-  }
-  if (p === "cheap") { $("maxIn").value = Math.min(3, sliderCap.in); $("maxOut").value = Math.min(15, sliderCap.out); }
-  if (p === "mid") { $("maxIn").value = Math.min(5, sliderCap.in); $("maxOut").value = Math.min(15, sliderCap.out); }
-  if (p === "quality") { $("minQ").value = 90; }
-  render();
-}));
-document.querySelectorAll("th[data-sort]").forEach((th) => th.addEventListener("click", () => {
-  $("sort").value = th.dataset.sort;
-  render();
-}));
-
 $("csvFile").addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -666,9 +658,7 @@ $("saveCsv").addEventListener("click", () => {
 });
 $("saveHtml").addEventListener("click", () => {
   const snap = JSON.stringify({
-    rows: DATA.rows,
-    labels: DATA.labels,
-    pass: DATA.pass,
+    rows: DATA.rows, labels: DATA.labels, pass: DATA.pass,
     as_of: new Date().toISOString().slice(0, 10),
   }).replace(/</g, "\\u003c");
   const html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML.replace(
@@ -677,7 +667,6 @@ $("saveHtml").addEventListener("click", () => {
   );
   download("model-routing-dashboard.html", html, "text/html;charset=utf-8");
 });
-
 ["dragenter","dragover"].forEach((ev) => document.addEventListener(ev, (e) => {
   if (![...e.dataTransfer.items].some((it) => it.kind === "file")) return;
   e.preventDefault();
@@ -695,7 +684,6 @@ document.addEventListener("drop", async (e) => {
 });
 
 applyData(baked, baked.as_of ? "snapshot " + baked.as_of : "embedded snapshot");
-
 (async () => {
   const params = new URLSearchParams(location.search);
   const csvUrl = params.get("csv") || "model-routing-by-category.csv";
@@ -704,7 +692,7 @@ applyData(baked, baked.as_of ? "snapshot " + baked.as_of : "embedded snapshot");
     const res = await fetch(csvUrl + (csvUrl.includes("?") ? "&" : "?") + "t=" + Date.now());
     if (!res.ok) return;
     loadCsvText(await res.text(), csvUrl.split("/").pop());
-  } catch (_) { /* keep snapshot */ }
+  } catch (_) {}
 })();
 </script>
 </body>

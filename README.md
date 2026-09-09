@@ -17,6 +17,25 @@ After a push to GitLab `main`, GitLab Pages publishes the desk at the project’
 
 ---
 
+## Workload slider (what the numbers mean)
+
+One scrubber per use case. It prices the **top five** models. Assumptions are shown under the slider.
+
+| Use case | Unit | Step | What it counts |
+|---|---|---|---|
+| Creative writing | blogs | 5 | Each blog × **3 revisions** = generation runs. 5 blogs → 15 runs. One run ≈ 4k in / 2.5k out tokens. |
+| Copywriting | pieces | 5 | Same 3-revision rule. One run ≈ 3.5k in / 1.8k out. |
+| Coding | lines | 5,000 | Default 10,000 lines (~10 pages). ≈ 16 tokens/line read, 4 tokens/line written. |
+| Design | units | 5 | Images/layouts. **Not token-billed** — slider counts units, not dollars. |
+| Video | minutes | 1 | Finished output × $ / second from the CSV. |
+| Browser | minutes | 5 | Agent on the live web. ≈ 10k in / 2.5k out per minute. |
+| Agent build | tasks | 1 | One build session ≈ 40k in / 16k out. |
+| Orchestration | dispatch jobs | 1 | The **lead** that plans and hands work to other agents — not the workers. ≈ 8k in / 3k out per job. |
+
+These are planning estimates from list prices, not invoices.
+
+---
+
 ## How to update / add models
 
 You do **not** edit the HTML by hand. You edit the CSV, then either:
